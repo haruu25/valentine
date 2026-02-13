@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VALENTINE</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #frame { width: 100%; height: 100%; border: 0; display: block; }
+
+    /* COVER */
+    #cover{
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #000;
+      font-family: system-ui, Arial, sans-serif;
+    }
+
+    /* Background image */
+    .gift{
+      position: absolute;
+      inset: 0;
+      background-image: url("assets/gift.png");
+      background-size: cover;
+      background-position: center;
+      transform: scale(1);
+      transition: transform 700ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* subtle vignette + hint */
+    .vignette{
+      position:absolute; inset:0;
+      background: radial-gradient(900px 600px at 50% 45%, rgba(255,255,255,0) 0%, rgba(0,0,0,.25) 70%, rgba(0,0,0,.55) 100%);
+      pointer-events:none;
+    }
+
+    /* Click target (center) */
+    .tapArea{
+      width: min(62vw, 360px);
+      aspect-ratio: 1 / 1;
+      border-radius: 999px;
+      cursor: pointer;
+      position: relative;
+      display: grid;
+      place-items: center;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tapText{
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.35);
+      color: #fff;
+      font-weight: 700;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%,100%{ transform: scale(1); opacity: .92; }
+      50%{ transform: scale(1.04); opacity: 1; }
+    }
+
+    /* transition out */
+    #cover.go .gift{ transform: scale(1.18); }
+    #cover.go .tapArea{ transform: scale(0.98); opacity: 0; transition: 280ms ease; }
+    #cover.fade{ opacity: 0; transition: opacity 420ms ease; }
+  </style>
+</head>
+
+<body>
+  <!-- COVER -->
+  <div id="cover">
+    <div class="gift" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+<div class="tapArea" id="tapArea" aria-label="Buka hadiah"></div>
+
+  </div>
+
+  <!-- MUSIK -->
+  <audio id="bgm" src="assets/musik.mp3" loop preload="auto" playsinline></audio>
+  <!-- kalau file kamu namanya lagu.mp3, ganti jadi: assets/lagu.mp3 -->
+
+  <!-- WEBSITE -->
+  <iframe id="frame" name="contentFrame" src="page1.html"></iframe>
+
+  <script>
+    const cover = document.getElementById("cover");
+    const tapArea = document.getElementById("tapArea");
+    const bgm = document.getElementById("bgm");
+    bgm.volume = 0.9;
+
+async function start() {
+  cover.classList.add("go");
+
+  try { await bgm.play(); } catch(e) {}
+
+  // mulai fade cover
+  setTimeout(() => cover.classList.add("fade"), 520);
+
+  // setelah cover hampir hilang, tampilkan page1 smooth
+  setTimeout(() => {
+    document.getElementById("frame").classList.add("show");
+  }, 750);
+
+  // benar-benar hilangkan cover
+  setTimeout(() => {
+    cover.style.display = "none";
+  }, 1100);
+}
+
+    tapArea.addEventListener("click", start, { once: true });
+    tapArea.addEventListener("touchstart", start, { once: true });
+    tapArea.addEventListener("pointerdown", start, { once: true });
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Page 6</title>
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="bg">
+
+    <!-- panah kiri/kanan -->
+    <a class="navArrowBtn navArrowLeft" href="page5.html">‹</a>
+    <a class="navArrowBtn navArrowRight" href="page7.html">›</a>
+
+    <section class="paperCard p6Card">
+
+      <!-- doodle dashed seperti contoh -->
+      <svg class="p6Doodles" viewBox="0 0 420 640" preserveAspectRatio="none">
+        <defs>
+          <marker id="arrowHeadPink" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#ff6ea3" stroke-width="2" stroke-linecap="round"/>
+          </marker>
+        </defs>
+
+        <!-- kiri (spiral + panah ke buket) -->
+        <path d="M120 360
+                 C70 390, 60 440, 105 470
+                 C150 500, 110 545, 70 520
+                 C40 500, 55 440, 100 438"
+              fill="none"
+              stroke="#ff6ea3"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-dasharray="6 8"
+              marker-end="url(#arrowHeadPink)"/>
+
+        <!-- kanan (menuju surat) -->
+        <path d="M362 350
+                 C365 400, 370 460, 325 490
+                 C290 515, 300 555, 350 535"
+              fill="none"
+              stroke="#ff6ea3"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-dasharray="6 8"
+              marker-end="url(#arrowHeadPink)"/>
+      </svg>
+
+      <!-- buket -->
+      <img class="p6Bouquet" src="assets/vase.png" alt="Flowers">
+
+      <!-- teks kiri bawah -->
+      <div class="p6Left">flowers<br>for you</div>
+
+      <!-- teks kanan tengah -->
+      <div class="p6Right">click to<br>open</div>
+
+      <!-- surat kanan bawah (klik → page7) -->
+      <a href="page7.html" aria-label="Open">
+        <img class="p6Envelope" src="assets/envelope.png" alt="Envelope">
+      </a>
+
+    </section>
+  </main>
+</body>
+</html>

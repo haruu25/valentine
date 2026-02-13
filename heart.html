@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Haruimut</title>
+<base target="contentFrame">
+
+<style>
+  html, body { height:100%; margin:0; overflow:hidden; background:#05050a; }
+
+  /* BACKGROUND LAYER (CSS) */
+  .bg {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(900px 600px at 20% 15%, rgba(255,110,190,.22), transparent 60%),
+      radial-gradient(800px 520px at 85% 30%, rgba(120,220,255,.18), transparent 58%),
+      radial-gradient(900px 700px at 55% 85%, rgba(255,190,120,.12), transparent 60%),
+      linear-gradient(180deg, #070818 0%, #05050a 60%, #04040a 100%);
+    overflow: hidden;
+  }
+
+  .stars, .stars2 {
+    position: absolute; inset: -30%;
+    background-image:
+      radial-gradient(#ffffff 1px, transparent 2px),
+      radial-gradient(#7ff0ff 1px, transparent 2px);
+    background-size: 70px 70px, 120px 120px;
+    background-position: 0 0, 30px 40px;
+    opacity: .22;
+    animation: drift 26s linear infinite;
+    filter: blur(.2px);
+  }
+  .stars2{
+    opacity: .14;
+    background-size: 90px 90px, 150px 150px;
+    animation-duration: 40s;
+    transform: scale(1.1);
+  }
+  @keyframes drift{
+    from{ transform: translateY(0) translateX(0); }
+    to{ transform: translateY(80px) translateX(-60px); }
+  }
+
+  /* bokeh bubble pelan */
+  .bokeh {
+    position:absolute; inset:0;
+    pointer-events:none;
+    opacity:.55;
+    mix-blend-mode: screen;
+  }
+  .bokeh span{
+    position:absolute;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), rgba(255,255,255,0) 60%);
+    filter: blur(1px);
+    animation: float 9s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform: translateY(0) translateX(0) scale(1); opacity:.55; }
+    50%{ transform: translateY(-30px) translateX(18px) scale(1.04); opacity:.85; }
+  }
+
+  /* CANVAS */
+  canvas{ position: fixed; inset:0; z-index: 1; display:block; width:100%; height:100%; }
+</style>
+</head>
+
+<body>
+  <div class="bg">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+
+    <div class="bokeh">
+      <span style="left:8%; top:60%; animation-delay:-1s;"></span>
+      <span style="left:70%; top:62%; width:220px; height:220px; animation-delay:-3s;"></span>
+      <span style="left:55%; top:10%; width:200px; height:200px; animation-delay:-5s;"></span>
+      <span style="left:18%; top:12%; width:160px; height:160px; animation-delay:-7s;"></span>
+    </div>
+  </div>
+
+  <canvas id="c"></canvas>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+
+let WORD = "haruimut";
+
+const POINTS = 130;      // jangan banyak biar kebaca
+const FONT_SIZE = 24;
+const SPEED = 0.10;
+const ROTATE = 0.03;
+const PULSE = 0.03;
+const INTRO_SEC = 2.5;
+
+let W,H,t=0;
+let startTime = performance.now();
+
+function resize(){
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  W = canvas.width = Math.floor(innerWidth * dpr);
+  H = canvas.height = Math.floor(innerHeight * dpr);
+  canvas.style.width = innerWidth + "px";
+  canvas.style.height = innerHeight + "px";
+  ctx.setTransform(1,0,0,1,0,0);
+}
+window.addEventListener("resize", resize);
+resize();
+
+function heartPoint(u){
+  const su = Math.sin(u), cu = Math.cos(u);
+  const x = 16 * su * su * su;
+  const y = 13*cu - 5*Math.cos(2*u) - 2*Math.cos(3*u) - Math.cos(4*u);
+  return {x,y};
+}
+
+function clamp(x,a,b){ return Math.max(a, Math.min(b,x)); }
+function easeOut(x){ return 1 - Math.pow(1-x,3); }
+
+// sparkle particles (halus)
+const sparks = Array.from({length: 60}, () => ({
+  x: Math.random(), y: Math.random(),
+  r: 0.6 + Math.random()*1.6,
+  s: 0.08 + Math.random()*0.22,
+  p: Math.random()*Math.PI*2
+}));
+
+function draw(){
+  t += 0.01;
+
+  // slight fade supaya ada trail, tapi tetap clear
+  ctx.fillStyle = "rgba(5,5,10,0.14)";
+  ctx.fillRect(0,0,W,H);
+
+  const cx = W/2;
+  const cy = H/2;
+  const scaleBase = Math.min(W,H)*0.030;
+
+  const pulse = 1 + Math.sin(t*2)*PULSE;
+  const rot = Math.sin(t*0.7)*ROTATE;
+
+  const introT = (performance.now()-startTime)/(INTRO_SEC*1000);
+  const intro = clamp(introT,0,1);
+  const introEase = easeOut(intro);
+
+  // font normal
+  ctx.font = `600 ${FONT_SIZE}px system-ui, Arial`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  // glow pink biar dreamy
+  ctx.shadowColor = "rgba(255,90,170,0.85)";
+  ctx.shadowBlur = 16;
+
+  // warna teks
+  const grad = ctx.createLinearGradient(cx, cy-240, cx, cy+240);
+  grad.addColorStop(0, "rgba(255,210,235,0.95)");
+  grad.addColorStop(0.55, "rgba(255,110,190,0.98)");
+  grad.addColorStop(1, "rgba(255,70,160,0.92)");
+  ctx.fillStyle = grad;
+
+  // LOVE TEXT
+  for(let i=0;i<POINTS;i++){
+    const p = i/POINTS;
+    const u = (p*Math.PI*2)+(t*SPEED);
+
+    const hp = heartPoint(u);
+    let hx = hp.x*scaleBase*pulse;
+    let hy = -hp.y*scaleBase*pulse;
+
+    const rx = hx*Math.cos(rot) - hy*Math.sin(rot);
+    const ry = hx*Math.sin(rot) + hy*Math.cos(rot);
+
+    // intro random -> heart (rapih)
+    const spread = Math.min(W,H)*0.28;
+    const randX = Math.sin(i*91.3)*spread;
+    const randY = Math.cos(i*47.8)*spread;
+
+    let x = (cx+randX)*(1-introEase) + (cx+rx)*introEase;
+    let y = (cy+randY)*(1-introEase) + (cy+ry)*introEase;
+
+    // shimmer lembut biar hidup
+    const wave = 0.72 + 0.28*Math.sin(t*1.2 + i*0.35);
+    ctx.globalAlpha = wave;
+
+    ctx.fillText(WORD, x, y);
+  }
+
+  // SPARKLES (bintang kecil berkelip)
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+  for(const s of sparks){
+    s.p += s.s * 0.08;
+    const x = s.x * W + Math.sin(s.p) * 10;
+    const y = s.y * H + Math.cos(s.p*1.2) * 10;
+    const a = 0.12 + 0.22 * (0.5 + 0.5*Math.sin(s.p*2));
+
+    ctx.fillStyle = `rgba(160,255,255,${a})`;
+    ctx.beginPath();
+    ctx.arc(x, y, s.r, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

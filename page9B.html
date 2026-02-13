@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Page 9B - Video 2</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="bg">
+    <section class="paperCard" style="padding:18px 16px 18px;">
+
+      <div class="tvWrap">
+
+        <div class="songTitle">ur pretty, like a daniel caesar song ;></div>
+
+        <div class="tvFrame">
+          <div class="tvBezel">
+            <div class="tvScreen">
+              <video controls playsinline preload="metadata">
+                <!-- GANTI NAMA FILE DI SINI JIKA BERBEDA -->
+                <source src="assets/video2.mp4" type="video/mp4">
+                Browser kamu tidak mendukung video.
+              </video>
+            </div>
+          </div>
+        </div>
+
+<div class="p9Actions">
+  <a class="btnOutlinePink" href="page9a.html">BACK</a>
+<a class="btnOutlinePink" href="heart.html" onclick="goFinish(event)" target="contentFrame">FINISH</a>
+<script>
+  function goFinish(e){
+    e.preventDefault();
+    document.body.classList.add("fadeOut");
+    setTimeout(() => {
+      window.location.href = "heart.html";
+    }, 380);
+  }
+</script>
+
+
+</div>
+
+
+      </div>
+
+    </section>
+  </main>
+</body>
+</html>
